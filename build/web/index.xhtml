@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Prueba</title>
+    </h:head>
+ <body>
+     <h:form id="principal" style="alignment-adjust: central">
+            <p:messages autoUpdate="true" showDetail="true" />
+            <f:event type="preRenderView" listener="#{usuario.listar('F')}"></f:event>
+            <h:panelGrid columns="2">
+
+                <h:column>
+                    <p:commandButton  oncomplete="PF('dialogoUsuarioCrea').show();" value="Nuevo" update=":creaUsuario">
+                    </p:commandButton>
+           
+                </h:column>
+            </h:panelGrid>
+            <p:dataTable id="datos" value="#{usuario.milista}" var="us" rowKey="#{us.id}" selectionMode="single"  
+                         rows="10" paginatorPosition="bottom"
+                         paginator="true"
+                         paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                         rowsPerPageTemplate="5,10,15" >
+                <!--    Style="width:400px;position:absolute;top:150px;"; -->
+                <f:facet name="header">
+                    USUARIOS
+                </f:facet>
+                <p:column headerText="Codigo Usuario">
+                    #{us.id}
+                </p:column>
+                <p:column headerText="Usuario"  filterBy="#{us.usuario}"
+                          footerText="contains" filterMatchMode="contains"   >
+                    #{us.usuario}
+                </p:column>
+
+                <p:column headerText="Contraseña">
+                    #{us.pass}
+                </p:column>
+                <p:column headerText="Operaciones">
+                    <p:commandButton  actionListener="#{usuario.seleccionar(us)}" oncomplete="PF('dialogoUsuarioVer').show();" icon="ui-icon-search" update=":VerUsuario">
+                    </p:commandButton>
+                    <p:commandButton  actionListener="#{usuario.seleccionar(us)}" oncomplete="PF('dialogoUsuarioActualiza').show();" icon="ui-icon-update" update=":actualizaUsuario">
+                    </p:commandButton>
+                     
+                </p:column>
+                 <p:ajax event="rowSelect"  oncomplete="PF('dialogoUsuarioVer').show();" 
+                       listener="#{usuario.seleccionarfilas}"  update=":VerUsuario"></p:ajax> 
+            </p:dataTable>
+        </h:form>
+        <p:dialog header="Crear Usuario" widgetVar="dialogoUsuarioCrea" resizable="false" id="creaUsuario" showEffect="fade" hideEffect="explode" modal="true" >
+
+            <h:form style="alignment-adjust: central">
+                <h:panelGrid id="display" columns="2"  cellpadding="4" style="margin: 0 auto;">
+
+                    <p:outputLabel for="txtUser" value="Username">
+
+                    </p:outputLabel> 
+                   
+                                       
+                    <p:inputText id="txtUser" value="#{usuario.dto.usuario}"></p:inputText>
+                    <p:outputLabel for="txtPass" value ="Contraseña" > </p:outputLabel>
+                    <p:inputText id="txtPass"  value="#{usuario.dto.pass}"></p:inputText>
+                    <p:outputLabel for="id" value ="id" > </p:outputLabel>
+                    <p:inputNumber  id= "id"  value="#{usuario.dto.id}"></p:inputNumber>
+
+
+                   
+                  
+                    
+
+                    <f:facet name="footer">
+                        <p:separator ></p:separator>
+                        <p:commandButton id="btnCreausuario1" 
+                                         oncomplete="PF('dialogoUsuarioCrea').hide();" icon="ui-icon-new" update=":principal"
+                                         process="@form"
+                                         value="guardar" actionListener="#{usuario.inserta()}" >
+                                
+                          
+                        </p:commandButton>
+                        <p:commandButton id="btnCancelainsercion" value="Cancelar" icon="ui-icon-cancel" oncomplete="PF('dialogoUsuarioCrea').hide();">
+                    </p:commandButton>
+
+                    </f:facet>
+                </h:panelGrid>
+            </h:form>                
+        </p:dialog>
+        <p:dialog header="Actualizar Usuario" widgetVar="dialogoUsuarioActualiza" resizable="false" id="actualizaUsuario" showEffect="fade" hideEffect="explode" modal="true" >
+
+            <h:form style="alignment-adjust: central">
+                <h:panelGrid id="displayActualiza" columns="2" cellpadding="4" style="margin: 0 auto;">
+
+                    <p:outputLabel for="txtUser1" value="Username">
+
+                    </p:outputLabel> 
+                    <p:inputText id="txtUser1" value="#{usuario.dto.usuario}"></p:inputText>
+
+                    <p:outputLabel for="txtPass1" value ="Contraseña" > </p:outputLabel>
+                    <p:inputText id="txtPass1"  value="#{usuario.dto.pass}"></p:inputText>
+
+                    <f:facet name="footer">
+                        <p:separator ></p:separator>
+                       <p:commandButton id="btnCreausuario" 
+                                         oncomplete="PF('dialogoUsuarioActualiza').hide();" icon="ui-icon-new" update=":principal"
+                                         process="@form"
+                                         value="Modificar" actionListener="#{usuario.actualiza()}" >
+                                
+                        </p:commandButton>
+                        
+                        <p:commandButton id="btnCancela"  value="Cancelar" oncomplete="PF('dialogoUsuarioActualiza').hide();"></p:commandButton>
+
+                    </f:facet>
+                </h:panelGrid>
+            </h:form>  
+        </p:dialog>
+
+
+        <p:dialog header="Ver Usuario" widgetVar="dialogoUsuarioVer" resizable="false" id="VerUsuario" showEffect="fade" hideEffect="explode" modal="true" >
+
+            <h:form style="alignment-adjust: central">
+                <h:panelGrid id="displayVer" columns="2" cellpadding="4" style="margin: 0 auto;">
+
+                    <p:outputLabel for="txtUserver" value="Username">
+
+                    </p:outputLabel> 
+                    <p:inputText id="txtUserver" value="#{usuario.dto.usuario}"></p:inputText>
+
+                    <p:outputLabel for="txtPassver" value ="Contraseña" > </p:outputLabel>
+                    <p:inputText id="txtPassver"  value="#{usuario.dto.pass}"></p:inputText>
+
+                    <f:facet name="footer">
+                        <p:separator ></p:separator>
+              
+                    </f:facet>
+                </h:panelGrid>
+            </h:form>
+
+        </p:dialog>
+
+    </body>
+</html>
+
